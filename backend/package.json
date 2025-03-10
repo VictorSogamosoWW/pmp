@@ -5,7 +5,7 @@
     "main": "dist/index.js",
     "type": "module",
     "scripts": {
-        "dev": "npx ts-node --transpile-only src/index.ts",
+        "dev": "ts-node src/index.ts",
         "build": "tsc",
         "start": "node dist/index.js",
         "watch": "nodemon --ext ts --exec ts-node src/index.ts",
@@ -20,12 +20,15 @@
         "fs-extra": "^11.3.0",
         "helmet": "^8.0.0",
         "morgan": "^1.10.0",
-        "multer": "^1.4.5-lts.1"
+        "multer": "^1.4.5-lts.1",
+        "typescript": "^5.8.2",
+        "@types/node": "^22.13.10",
+        "ts-node": "^10.9.2"
     },
     "devDependencies": {
         "@types/express": "^5.0.0",
         "@types/morgan": "^1.9.9",
-        "@types/node": "^22.13.9",
+        "@types/node": "^22.13.10",
         "eslint": "^9.21.0",
         "nodemon": "^3.1.9",
         "ts-node": "^10.9.2",

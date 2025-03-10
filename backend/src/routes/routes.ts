@@ -18,4 +18,4 @@ const routes = (app: Express) => {
     app.use(router);
 };
 
-export default routes; 
+export default routes;
