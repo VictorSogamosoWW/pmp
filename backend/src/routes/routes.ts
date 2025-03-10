@@ -7,6 +7,7 @@ export const routes = (app: Express)=> {
     const router = express.Router();
 
     const frontendPath = path.join(__dirname, '../../frontend/dist');
+    app.use(express.static(frontendPath));
 
     router.get("/", (req, res) => {
         res.send("API funcionando");
