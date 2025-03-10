@@ -1,12 +1,16 @@
 {
   "compilerOptions": {
-    "target": "ES6",
     "module": "CommonJS",
-    "rootDir": "./src",
-    "outDir": "./dist",
+    "moduleResolution": "Node",
+    "target": "ESNext",
+    "outDir": "dist",
+    "rootDir": "src",
     "strict": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "resolveJsonModule": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src"],
+  "ts-node": {
+    "esm": true
+  }
 }
