@@ -7,4 +7,5 @@ export const middlewares = (app: Express) => {
     app.use(express.json());
     app.use(helmet());
     app.use(morgan("dev"));
+    app.use(express.urlencoded({extended: true}));
 };

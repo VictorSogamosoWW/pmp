@@ -1,5 +1,4 @@
 import express from "express";
-import {config} from "./config/config";
 import {middlewares} from "./middlewares/middlewares";
 import {routes} from "./routes/routes";
 
