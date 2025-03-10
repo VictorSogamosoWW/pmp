@@ -1,6 +1,8 @@
 import express from "express";
 import dotenv from "dotenv";
-import routes from "../src/routes/routes";
+import routes from "./routes/routes";
+//Prueba de funcionalidad
+console.log("Funcionando el back");
 
 //Cargar variables del entorno
 dotenv.config();
