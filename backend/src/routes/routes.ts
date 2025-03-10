@@ -1,9 +1,9 @@
-import {Express} from "express";
+import { Express } from "express";
 import express from "express";
 import uploadRoutes from "./uploadRoutes";
 import path from 'path';
 
-export const routes = (app: Express)=> {
+const routes = (app: Express) => {
     const router = express.Router();
 
     const frontendPath = path.join(__dirname, '../../frontend/dist');
@@ -13,7 +13,9 @@ export const routes = (app: Express)=> {
         res.send("API funcionando");
     });
 
-//Integrar rutas de upload
-router.use("/uploads", uploadRoutes);
-app.use(router);
+    // Integrar rutas de upload
+    router.use("/uploads", uploadRoutes);
+    app.use(router);
 };
+
+export default routes; 
