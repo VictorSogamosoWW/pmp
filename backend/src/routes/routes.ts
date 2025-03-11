@@ -1,6 +1,6 @@
 import { Express } from "express";
 import express from "express";
-import uploadRoutes from "./uploadRoutes";
+import uploadRoutes from "./uploadRoutes.js";
 import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
@@ -8,7 +8,7 @@ import { dirname } from "path";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const routes = (app: Express) => {
+export const routes = (app: Express) => {
     const router = express.Router();
 
     const frontendPath = path.join(__dirname, '../../frontend/dist');
@@ -23,4 +23,3 @@ const routes = (app: Express) => {
     app.use(router);
 };
 
-export default routes;

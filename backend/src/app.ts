@@ -1,6 +1,6 @@
 import express from "express";
 import path from "path";
-import routes from "./routes/routes"; // Importación predeterminada
+import {routes} from "./routes/routes.js"; // Importación predeterminada
 
 const app = express();
 

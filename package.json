@@ -1,12 +1,16 @@
 {
     "name": "pmp",
     "version": "1.0.0",
+    "type": "module",
     "scripts": {
-      "dev:backend": "cd backend && npm run dev",
-      "dev:frontend": "cd frontend && npm run dev",
-      "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\""
+        "dev:backend": "cd backend && npm run dev",
+        "dev:frontend": "cd frontend && npm run dev",
+        "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\""
     },
     "dependencies": {
-      "concurrently": "^8.2.2"
+        "concurrently": "^8.2.2"
+    },
+    "devDependencies": {
+        "ts-node": "^10.9.2"
     }
-  }
+}

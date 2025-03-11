@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
-import { fileFilter } from "../utils/fileFilter";
+import { fileFilter } from "../utils/fileFilter.js";
 
 // Configurar almacenamiento
 const storage = multer.diskStorage({
