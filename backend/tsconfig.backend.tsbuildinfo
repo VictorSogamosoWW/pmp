@@ -1,1 +1,0 @@
-{"root":["./src/app.ts","./src/index.ts","./src/server.ts","./src/config/config.ts","./src/controllers/uploadcontrollers.ts","./src/middlewares/middlewares.ts","./src/routes/routes.ts","./src/routes/uploadroutes.ts","./src/utils/filefilter.ts"],"version":"5.8.2"}
