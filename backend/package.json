@@ -7,7 +7,7 @@
     "scripts": {
         "dev": "node --loader ts-node/esm src/index.ts",
         "build": "tsc",
-        "start": "node dist/index.js",
+        "start": "ts-node dist/index.js",
         "watch": "nodemon --ext ts --exec ts-node src/index.ts",
         "lint": "eslint ."
     },
@@ -28,6 +28,7 @@
         "@types/multer": "^1.4.12",
         "@types/node": "^22.13.10",
         "eslint": "^9.21.0",
+        "esm": "^3.2.25",
         "nodemon": "^3.1.9",
         "ts-node": "^10.9.2",
         "ts-node-dev": "^2.0.0",
