@@ -38,12 +38,12 @@ const upload = multer({ storage, fileFilter });
 export const uploadMiddleware = upload.single("file");
 
 // Controlador para subir archivos
-export const handleFileUpload = (req: Request, res: Response): Response => {
+export const handleFileUpload = (req: Request, res: Response): void => {
     if (!req.file) {
         // Si no se subió ningún archivo, devuelve un error
-        return res.status(400).json({ message: "No se ha subido ningún archivo" });
+        res.status(400).json({ message: "No se ha subido ningún archivo" });
     }
 
     // Respuesta exitosa
-     return res.json({ message: "Archivo subido correctamente", file: req.file });
+    res.json({ message: "Archivo subido correctamente", file: req.file });
 };

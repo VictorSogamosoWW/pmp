@@ -14,10 +14,28 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onFileUpload }) => {
     }
   };
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (file) {
-      onFileUpload(file);
+    
+    if (!file) return;
+  
+    const formData = new FormData();
+    formData.append("file", file);
+  
+    try {
+      const response = await fetch("http://localhost:3000/uploads", {
+        method: "POST",
+        body: formData,
+      });
+  
+      if (!response.ok) {
+        throw new Error("Error al subir el archivo");
+      }
+  
+      const data = await response.json();
+      console.log("✅ Archivo subido:", data);
+    } catch (error) {
+      console.error("❌ Error al subir el archivo:", error);
     }
   };
 

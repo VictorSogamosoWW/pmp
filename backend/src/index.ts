@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import {routes} from "./routes/routes.js";
+import cors from "cors";
 //Prueba de funcionalidad
 console.log("Funcionando el back");
 
@@ -10,6 +11,9 @@ dotenv.config();
 //Crear la aplicacion Express
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+//Usar cors
+app.use(cors());
 
 //Middleware para proceso de JSON
 app.use(express.json());

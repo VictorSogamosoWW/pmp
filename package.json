@@ -11,6 +11,7 @@
         "concurrently": "^8.2.2"
     },
     "devDependencies": {
+        "@types/cors": "^2.8.17",
         "ts-node": "^10.9.2",
         "ts-node-dev": "^2.0.0"
     }
