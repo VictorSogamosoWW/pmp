@@ -8,7 +8,7 @@ import { dirname } from "path";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-export const routes = (app: Express) => {
+const routes = (app: Express) => {
     const router = express.Router();
 
     const frontendPath = path.join(__dirname, '../../frontend/dist');
@@ -23,3 +23,4 @@ export const routes = (app: Express) => {
     app.use(router);
 };
 
+export default routes;
