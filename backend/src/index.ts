@@ -1,26 +1,26 @@
 import express from "express";
-import dotenv from "dotenv";
-import {routes} from "./routes/routes.js";
 import cors from "cors";
-//Prueba de funcionalidad
-console.log("Funcionando el back");
+import path from "path";
+import uploadRoutes from "./routes/uploadRoutes.js";
+import { fileURLToPath } from "url";
 
-//Cargar variables del entorno
-dotenv.config();
-
-//Crear la aplicacion Express
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-//Usar cors
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Middlewares
 app.use(cors());
+app.use(express.json()); // Para manejar JSON en las peticiones
+app.use(express.urlencoded({ extended: true })); // Para manejar formularios
 
-//Middleware para proceso de JSON
-app.use(express.json());
+//Servir archivos estaticos
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-routes(app);
+// Rutas
+app.use("/uploads", uploadRoutes);
 
-//Iniciar servidor
-app.listen(PORT, ()=>{
-    console.log(`servidor corriendo en puerto ${PORT}`)
+app.listen(PORT, () => {
+    console.log(`✅ Servidor corriendo en http://localhost:${PORT}`);
 });
