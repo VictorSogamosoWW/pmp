@@ -1,87 +1,74 @@
 import React, { useState } from 'react';
-import { Container, Typography, Box, Button, CircularProgress, List, ListItem, IconButton } from '@mui/material';
-import { CloudUpload, Delete } from '@mui/icons-material';
+import { Box, Button, CircularProgress, Typography, List, ListItem, IconButton } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 
-const FILE_CATEGORIES = [
-  'Pronósticos de Venta',
-  'Políticas de Producción',
-  'Rutas y Estándares',
-  'Capacidad'
-];
+interface FileUploaderProps {
+  onFileUpload: (file: File, category: string) => Promise<void>;
+}
 
-const FileUploadManager: React.FC = () => {
-  const [uploadedFiles, setUploadedFiles] = useState<{ [key: string]: File | null }>({});
+const FileUploader: React.FC<FileUploaderProps> = ({ onFileUpload }) => {
+  const [selectedFiles, setSelectedFiles] = useState<{ [key: string]: File | null }>({});
   const [uploading, setUploading] = useState<{ [key: string]: boolean }>({});
+
+  const categories = [
+    'pronosticos',
+    'politicas',
+    'rutas',
+    'capacidad',
+  ];
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, category: string) => {
     if (event.target.files && event.target.files.length > 0) {
       const file = event.target.files[0];
-      setUploadedFiles((prev) => ({ ...prev, [category]: file }));
+      setSelectedFiles((prev) => ({ ...prev, [category]: file }));
     }
   };
 
   const handleUpload = async (category: string) => {
-    if (!uploadedFiles[category]) return;
-    setUploading((prev) => ({ ...prev, [category]: true }));
+    const file = selectedFiles[category];
+    if (!file) return;
 
-    // Simulación de carga
-    setTimeout(() => {
-      setUploading((prev) => ({ ...prev, [category]: false }));
-    }, 2000);
+    setUploading((prev) => ({ ...prev, [category]: true }));
+    await onFileUpload(file, category);
+    setUploading((prev) => ({ ...prev, [category]: false }));
   };
 
-  const handleDelete = (category: string) => {
-    setUploadedFiles((prev) => ({ ...prev, [category]: null }));
+  const handleRemoveFile = (category: string) => {
+    setSelectedFiles((prev) => ({ ...prev, [category]: null }));
   };
 
   return (
-    <Container>
-      <Box sx={{ my: 4 }}>
-        <Typography variant="h4" gutterBottom>
-          Carga de Archivos
-        </Typography>
-
-        {FILE_CATEGORIES.map((category) => (
-          <Box key={category} sx={{ mb: 3, p: 2, border: '1px solid #ccc', borderRadius: 2 }}>
-            <Typography variant="h6">{category}</Typography>
-            <input
-              type="file"
-              style={{ display: 'none' }}
-              id={`file-input-${category}`}
-              onChange={(e) => handleFileChange(e, category)}
-            />
-            <label htmlFor={`file-input-${category}`}>
-              <Button variant="contained" component="span" startIcon={<CloudUpload />} sx={{ mt: 1 }}>
-                Seleccionar Archivo
-              </Button>
-            </label>
-            {uploadedFiles[category] && (
-              <List>
-                <ListItem>
-                  {uploadedFiles[category]?.name}
-                  {uploading[category] ? (
-                    <CircularProgress size={20} sx={{ ml: 2 }} />
-                  ) : (
-                    <IconButton onClick={() => handleDelete(category)} color="error">
-                      <Delete />
-                    </IconButton>
-                  )}
-                </ListItem>
-              </List>
-            )}
-            <Button
-              variant="outlined"
-              onClick={() => handleUpload(category)}
-              disabled={!uploadedFiles[category] || uploading[category]}
-              sx={{ mt: 1 }}
-            >
-              Subir Archivo
-            </Button>
-          </Box>
-        ))}
-      </Box>
-    </Container>
+    <Box>
+      {categories.map((category) => (
+        <Box key={category} sx={{ mb: 2, p: 2, border: '1px solid #ccc', borderRadius: '8px' }}>
+          <Typography variant="h6">{category.charAt(0).toUpperCase() + category.slice(1)}</Typography>
+          <input
+            type="file"
+            onChange={(e) => handleFileChange(e, category)}
+            accept=".xlsx, .csv"
+          />
+          {selectedFiles[category] && (
+            <List>
+              <ListItem>
+                {selectedFiles[category]?.name}
+                <IconButton onClick={() => handleRemoveFile(category)}>
+                  <DeleteIcon color="error" />
+                </IconButton>
+              </ListItem>
+            </List>
+          )}
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => handleUpload(category)}
+            disabled={!selectedFiles[category] || uploading[category]}
+          >
+            {uploading[category] ? <CircularProgress size={24} /> : 'Subir'}
+          </Button>
+        </Box>
+      ))}
+    </Box>
   );
 };
 
-export default FileUploadManager;
+export default FileUploader;
