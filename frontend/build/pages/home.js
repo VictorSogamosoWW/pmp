@@ -1,18 +1,16 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useState } from 'react';
-import { Container, Typography, Box, Alert, CircularProgress, List, ListItem, IconButton } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { Container, Typography, Box, CircularProgress, List, ListItem, Button } from '@mui/material';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ErrorIcon from '@mui/icons-material/Error';
 import FileUploader from '../utils/fileUploader';
 import axios from 'axios';
+const categories = ['Pronósticos de Venta', 'Políticas de Producción', 'Rutas y Estándares', 'Capacidad'];
 const Home = () => {
-    const [message, setMessage] = useState(null);
-    const [isError, setIsError] = useState(false);
-    const [loading, setLoading] = useState(false);
+    const [fileStatus, setFileStatus] = useState(Object.fromEntries(categories.map(category => [category, 'pending'])));
     const [uploadedFiles, setUploadedFiles] = useState([]);
     const handleFileUpload = async (file, category) => {
-        setLoading(true);
-        setMessage(null);
-        setIsError(false);
+        setFileStatus(prev => ({ ...prev, [category]: 'uploading' }));
         const formData = new FormData();
         formData.append('file', file);
         formData.append('storageType', category);
@@ -20,21 +18,14 @@ const Home = () => {
             const response = await axios.post('http://localhost:3000/uploads', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
-            setUploadedFiles((prev) => [...prev, { name: file.name, category }]);
-            setMessage(response.data.message);
-            setIsError(false);
+            setUploadedFiles(prev => [...prev, { name: file.name, category }]);
+            setFileStatus(prev => ({ ...prev, [category]: 'completed' }));
         }
         catch (error) {
-            setMessage('Error al subir el archivo');
-            setIsError(true);
-        }
-        finally {
-            setLoading(false);
+            setFileStatus(prev => ({ ...prev, [category]: 'error' }));
         }
     };
-    const handleDeleteFile = (fileName) => {
-        setUploadedFiles((prev) => prev.filter(file => file.name !== fileName));
-    };
-    return (_jsx(Container, { children: _jsxs(Box, { sx: { my: 4 }, children: [_jsx(Typography, { variant: "h4", component: "h1", gutterBottom: true, children: "Plan Maestro de Producci\u00F3n (PMP)" }), _jsx(FileUploader, { onFileUpload: handleFileUpload }), loading && _jsx(CircularProgress, { sx: { display: 'block', my: 2 } }), message && (_jsx(Alert, { severity: isError ? 'error' : 'success', sx: { mt: 2 }, children: message })), _jsx(List, { children: uploadedFiles.map((file, index) => (_jsxs(ListItem, { children: [file.name, " (", file.category, ")", _jsx(IconButton, { onClick: () => handleDeleteFile(file.name), children: _jsx(DeleteIcon, { color: "error" }) })] }, index))) })] }) }));
+    const allFilesUploaded = categories.every(category => fileStatus[category] === 'completed');
+    return (_jsx(Container, { children: _jsxs(Box, { sx: { my: 4 }, children: [_jsx(Typography, { variant: "h4", gutterBottom: true, children: "Plan Maestro de Producci\u00F3n (PMP)" }), _jsx(Typography, { variant: "body1", children: "Aseg\u00FArate de cargar todos los archivos antes de generar el plan." }), _jsx(List, { children: categories.map(category => (_jsxs(ListItem, { sx: { display: 'flex', alignItems: 'center' }, children: [_jsx(Typography, { sx: { flexGrow: 1 }, children: category }), _jsx(FileUploader, { onFileUpload: (file) => handleFileUpload(file, category) }), fileStatus[category] === 'uploading' && _jsx(CircularProgress, { size: 24, sx: { ml: 2 } }), fileStatus[category] === 'completed' && _jsx(CheckCircleIcon, { color: "success", sx: { ml: 2 } }), fileStatus[category] === 'error' && _jsx(ErrorIcon, { color: "error", sx: { ml: 2 } })] }, category))) }), _jsx(Button, { variant: "contained", color: "primary", disabled: !allFilesUploaded, sx: { mt: 2 }, children: "GENERAR PLAN" })] }) }));
 };
 export default Home;

@@ -1,19 +1,23 @@
 import React, { useState } from 'react';
-import { Container, Typography, Box, Alert, CircularProgress, List, ListItem, IconButton } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { Container, Typography, Box, Alert, CircularProgress, List, ListItem, IconButton, Button } from '@mui/material';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ErrorIcon from '@mui/icons-material/Error';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
 import FileUploader from '../utils/fileUploader';
 import axios from 'axios';
 
-const Home: React.FC = () => {
-  const [message, setMessage] = useState<string | null>(null);
-  const [isError, setIsError] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [uploadedFiles, setUploadedFiles] = useState<{ name: string; category: string }[]>([]);
+const categories = ['Pronósticos de Venta', 'Políticas de Producción', 'Rutas y Estándares', 'Capacidad'];
 
+type FileStatus = 'pending' | 'uploading' | 'completed' | 'error';
+
+const Home: React.FC = () => {
+  const [fileStatus, setFileStatus] = useState<{ [key: string]: FileStatus }>(
+    Object.fromEntries(categories.map(category => [category, 'pending']))
+  );
+  const [uploadedFiles, setUploadedFiles] = useState<{ name: string; category: string }[]>([]);
+  
   const handleFileUpload = async (file: File, category: string) => {
-    setLoading(true);
-    setMessage(null);
-    setIsError(false);
+    setFileStatus(prev => ({ ...prev, [category]: 'uploading' }));
 
     const formData = new FormData();
     formData.append('file', file);
@@ -24,48 +28,45 @@ const Home: React.FC = () => {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
-      setUploadedFiles((prev) => [...prev, { name: file.name, category }]);
-      setMessage(response.data.message);
-      setIsError(false);
+      setUploadedFiles(prev => [...prev, { name: file.name, category }]);
+      setFileStatus(prev => ({ ...prev, [category]: 'completed' }));
     } catch (error) {
-      setMessage('Error al subir el archivo');
-      setIsError(true);
-    } finally {
-      setLoading(false);
+      setFileStatus(prev => ({ ...prev, [category]: 'error' }));
     }
   };
 
-  const handleDeleteFile = (fileName: string) => {
-    setUploadedFiles((prev) => prev.filter(file => file.name !== fileName));
-  };
+  const allFilesUploaded = categories.every(category => fileStatus[category] === 'completed');
 
   return (
     <Container>
       <Box sx={{ my: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
+        <Typography variant="h4" gutterBottom>
           Plan Maestro de Producción (PMP)
         </Typography>
-
-        <FileUploader onFileUpload={handleFileUpload} />
-
-        {loading && <CircularProgress sx={{ display: 'block', my: 2 }} />}
-
-        {message && (
-          <Alert severity={isError ? 'error' : 'success'} sx={{ mt: 2 }}>
-            {message}
-          </Alert>
-        )}
+        <Typography variant="body1">
+          Asegúrate de cargar todos los archivos antes de generar el plan.
+        </Typography>
 
         <List>
-          {uploadedFiles.map((file, index) => (
-            <ListItem key={index}>
-              {file.name} ({file.category})
-              <IconButton onClick={() => handleDeleteFile(file.name)}>
-                <DeleteIcon color="error" />
-              </IconButton>
+          {categories.map(category => (
+            <ListItem key={category} sx={{ display: 'flex', alignItems: 'center' }}>
+              <Typography sx={{ flexGrow: 1 }}>{category}</Typography>
+              <FileUploader onFileUpload={(file) => handleFileUpload(file, category)} />
+              {fileStatus[category] === 'uploading' && <CircularProgress size={24} sx={{ ml: 2 }} />}
+              {fileStatus[category] === 'completed' && <CheckCircleIcon color="success" sx={{ ml: 2 }} />}
+              {fileStatus[category] === 'error' && <ErrorIcon color="error" sx={{ ml: 2 }} />}
             </ListItem>
           ))}
         </List>
+
+        <Button
+          variant="contained"
+          color="primary"
+          disabled={!allFilesUploaded}
+          sx={{ mt: 2 }}
+        >
+          GENERAR PLAN
+        </Button>
       </Box>
     </Container>
   );
