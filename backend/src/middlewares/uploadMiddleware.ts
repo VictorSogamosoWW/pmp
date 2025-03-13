@@ -1,26 +1,27 @@
 import multer from "multer";
 import path from "path";
 import fs from "fs";
-import { Request } from "express";
+import { Request, Response, NextFunction } from "express";
 import { fileURLToPath } from "url";
-import { dirname } from "path"; 
+import { dirname } from "path";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const almacenamiento = multer.diskStorage({
-    destination: (req: Request, file, cb) => {
-        
-        console.log(req.body);
+    destination: (req: Request, file, cb) => { // Corregimos la función destination
+        const tipo = req.body.tipo;
 
-        let tipo = req.body.tipo || "otros"; // Si no se envía, usar "otros"
-    
-        // Normalizar el nombre del tipo
-        tipo = tipo
-            .toLowerCase() // Convertir a minúsculas
-            .replace(/\s+/g, '-') // Reemplazar espacios con guiones
-            .replace(/[^a-z0-9-]/g, ''); // Eliminar caracteres especiales
-        const linkCarga = path.join(__dirname, '..', 'uploads', tipo);
+        if (!tipo) {
+            return cb(new Error("El parámetro 'tipo' es obligatorio."));
+        }
+
+        const tipoNormalizado = tipo
+            .toLowerCase()
+            .replace(/\s+/g, '-')
+            .replace(/[^a-z0-9-]/g, '');
+
+        const linkCarga = path.join(__dirname, '..', 'uploads', tipoNormalizado);
 
         if (!fs.existsSync(linkCarga)) {
             fs.mkdirSync(linkCarga, { recursive: true });
@@ -32,6 +33,13 @@ const almacenamiento = multer.diskStorage({
     },
 });
 
-const carga = multer ({storage: almacenamiento});
+const carga = multer({ storage: almacenamiento });
 
-export const uploadMiddleware = carga.single("file");
+export const uploadMiddleware = (req: Request, res: Response, next: NextFunction) => {
+    carga.fields([{ name: 'tipo', maxCount: 1 }, { name: 'file', maxCount: 1 }])(req, res, (err) => {
+        if (err) {
+            return res.status(400).json({ message: err.message });
+        }
+        next();
+    });
+};
