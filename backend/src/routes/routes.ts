@@ -11,6 +11,10 @@ const __dirname = dirname(__filename);
 export const routes = (app: Express) => {
     const router = express.Router();
 
+    // Agregar middleware para analizar datos de formulario y JSON
+    app.use(express.urlencoded({ extended: true }));
+    app.use(express.json());
+
     const frontendPath = path.join(__dirname, '../../frontend/dist');
     app.use(express.static(frontendPath));
 

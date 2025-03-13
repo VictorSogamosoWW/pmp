@@ -10,7 +10,16 @@ const __dirname = dirname(__filename);
 
 const almacenamiento = multer.diskStorage({
     destination: (req: Request, file, cb) => {
-        const tipo = req.body.tipo || "otros"; // Si no se envía, usar "otros"
+        
+        console.log(req.body);
+
+        let tipo = req.body.tipo || "otros"; // Si no se envía, usar "otros"
+    
+        // Normalizar el nombre del tipo
+        tipo = tipo
+            .toLowerCase() // Convertir a minúsculas
+            .replace(/\s+/g, '-') // Reemplazar espacios con guiones
+            .replace(/[^a-z0-9-]/g, ''); // Eliminar caracteres especiales
         const linkCarga = path.join(__dirname, '..', 'uploads', tipo);
 
         if (!fs.existsSync(linkCarga)) {
