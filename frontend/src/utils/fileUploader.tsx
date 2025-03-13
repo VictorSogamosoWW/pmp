@@ -29,9 +29,16 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onFileUpload }) => {
     if (!file) return;
 
     setUploading((prev) => ({ ...prev, [category]: true }));
-    await onFileUpload(file, category);
-    setUploading((prev) => ({ ...prev, [category]: false }));
-  };
+    try {
+        console.log("Archivo a subir:", file);
+        await onFileUpload(file, category);
+        setUploading((prev) => ({ ...prev, [category]: false }));
+    } catch (error) {
+        console.error("Error al subir archivo:", error);
+        setUploading((prev) => ({ ...prev, [category]: false }));
+        alert("Error al subir el archivo. Por favor, inténtalo de nuevo.");
+    }
+};
 
   const handleRemoveFile = (category: string) => {
     setSelectedFiles((prev) => ({ ...prev, [category]: null }));
@@ -52,7 +59,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onFileUpload }) => {
               <ListItem>
                 {selectedFiles[category]?.name}
                 <IconButton onClick={() => handleRemoveFile(category)}>
-                  <DeleteIcon color="error" />
+                  <DeleteIcon/>
                 </IconButton>
               </ListItem>
             </List>
